@@ -4,7 +4,8 @@ const Jobs = mongoose.model('Jobs', {
   title: String,
   description: String,
   salary: Number,
-  local: String
+  local: String,
+  pagination: Number
 })
 
 module.exports = Jobs

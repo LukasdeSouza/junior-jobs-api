@@ -4,7 +4,7 @@ const Jobs = require('../models/Jobs')
 
 router.post('/', async (req, res) => {
 
-  const { title, description, salary, local } = req.body
+  const { title, description, salary, local, pagination } = req.body
 
   if (!title && !salary) {
     res.status(422).json({ error: 'Preencha os campos corretamente' })
@@ -15,7 +15,8 @@ router.post('/', async (req, res) => {
     title,
     description,
     salary,
-    local
+    local,
+    pagination
   }
 
   try {
