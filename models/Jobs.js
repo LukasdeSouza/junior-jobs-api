@@ -4,6 +4,7 @@ const Jobs = mongoose.model('Jobs', {
   urlImage: String,
   title: String,
   description: String,
+  tecnologies: String,
   salary: Number,
   local: String,
   link: String,
