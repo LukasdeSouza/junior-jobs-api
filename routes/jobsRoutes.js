@@ -32,6 +32,7 @@ router.post('/', async (req, res) => {
 })
 
 router.get('/', async (req, res) => {
+
   try {
     const jobs = await Jobs.find()
 
