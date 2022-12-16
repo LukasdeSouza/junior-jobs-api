@@ -4,7 +4,7 @@ const Jobs = require('../models/Jobs')
 
 router.post('/', async (req, res) => {
 
-  const { title, description, salary, local, pagination } = req.body
+  const { urlImage, title, description, salary, local, link, pagination } = req.body
 
   if (!title && !salary) {
     res.status(422).json({ error: 'Preencha os campos corretamente' })
@@ -12,20 +12,20 @@ router.post('/', async (req, res) => {
   }
 
   const jobs = {
+    urlImage,
     title,
     description,
     salary,
     local,
-    pagination
+    link,
+    pagination,
   }
 
   try {
     await Jobs.create(jobs)
-
     res.status(201).json({ success: 'Vaga Criada com Sucesso!' })
 
   } catch (error) {
-
     res.status(500).json({ error: error })
   }
 })
