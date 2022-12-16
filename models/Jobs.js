@@ -5,7 +5,7 @@ const Jobs = mongoose.model('Jobs', {
   title: String,
   description: String,
   tecnologies: String,
-  salary: Number,
+  salary: String,
   local: String,
   link: String,
   pagination: Number
