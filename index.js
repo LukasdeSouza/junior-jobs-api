@@ -1,10 +1,14 @@
-const express = require('express')
 require('dotenv').config()
+
+const express = require('express')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const { off } = require('./models/Person')
 const personRoutes = require('./routes/personRoutes')
 const jobsRoutes = require('./routes/jobsRoutes')
+const registerRoutes = require('./routes/registerRoutes')
 
 
 const app = express()
@@ -24,7 +28,7 @@ app.use(function (req, res, next) {
 app.use('/person', personRoutes)
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Lucas Node API Example' })
+  res.json({ message: 'Lucas Node API - Seek Jobs' })
 })
 
 app.use('/jobs', jobsRoutes)
@@ -32,6 +36,8 @@ app.use('/jobs', jobsRoutes)
 app.get('/', (req, res) => {
   res.json({ message: 'Lucas Jobs API Example' })
 })
+
+app.use('/auth/register', registerRoutes)
 
 // app.get('/customer', (req, res) => {
 //   res.json(
@@ -66,7 +72,7 @@ app.get('/', (req, res) => {
 const PASSWORD = encodeURIComponent(process.env.DB_PASSWORD)
 mongoose.connect(`mongodb+srv://LukasdeSouza:${PASSWORD}@cluster0.ovsw5ph.mongodb.net/?retryWrites=true&w=majority`)
   .then(() => {
-    console.log('Conectado ao MongoDB')
+    console.log('Conexão Efetuada com Sucesso!')
     app.listen(4000)
   })
   .catch((err) => console.log(err))
