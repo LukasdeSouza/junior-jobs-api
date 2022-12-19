@@ -2,8 +2,6 @@ require('dotenv').config()
 
 const express = require('express')
 const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 
 const { off } = require('./models/Person')
 const personRoutes = require('./routes/personRoutes')
@@ -37,7 +35,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Lucas Jobs API Example' })
 })
 
-app.use('/auth/register', registerRoutes)
+app.use('/auth', registerRoutes)
 
 // app.get('/customer', (req, res) => {
 //   res.json(
