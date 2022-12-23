@@ -44,7 +44,7 @@ router.get("/user/:id", checkToken, async (req, res) => {
 
 router.post('/register', async (req, res) => {
 
-  const { name, email, password, confirmpassword } = req.body
+  const { name, email, type, cnpj, password, confirmpassword } = req.body
 
   const salt = await genSalt(12)
   const passwordHash = await bcrypt.hash(password, salt)
@@ -65,6 +65,8 @@ router.post('/register', async (req, res) => {
   const register = {
     name,
     email,
+    type,
+    cnpj,
     password: passwordHash,
     confirmpassword: passwordHash
   }
@@ -84,11 +86,12 @@ router.post('/', async (req, res) => {
   if (!email) {
     return res.status(422).json({ msg: 'O campo Email é obrigatório' })
   }
-  if (!email) {
+  if (!password) {
     return res.status(422).json({ msg: 'O campo Senha é obrigatório' })
   }
 
   const userExists = await Register.findOne({ email: email })
+  const allNeededInfo = await Register.find({ email: email }, '-password -confirmpassword')
 
   if (!userExists) {
     return res.status(404).json({ msg: "O usuário não está cadastrado. Deseja criar conta?" })
@@ -107,7 +110,7 @@ router.post('/', async (req, res) => {
     },
       secret,
     )
-    res.status(200).json({ msg: "Autenticação Realizada com Sucesso", token })
+    res.status(200).json({ msg: "Autenticação Realizada com Sucesso", token, allNeededInfo })
 
   } catch (error) {
     console.log(error)
