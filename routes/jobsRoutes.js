@@ -4,14 +4,43 @@ const Jobs = require('../models/Jobs')
 
 router.post('/', async (req, res) => {
 
-  const { urlImage, title, description, tecnologies, salary, local, link, pagination } = req.body
+  const { _id_empresa, urlImage, title, description, tecnologies, salary, local, link } = req.body
 
-  if (!title && !salary) {
+  if (!_id_empresa) {
+    res.status(422).json({ error: 'Preencha o id da empresa' })
+    return
+  }
+  if (!urlImage) {
     res.status(422).json({ error: 'Preencha os campos corretamente' })
+    return
+  }
+  if (!title) {
+    res.status(422).json({ error: 'Preencha os campos corretamente' })
+    return
+  }
+  if (!description) {
+    res.status(422).json({ error: 'Preencha os campos corretamente' })
+    return
+  }
+  if (!tecnologies) {
+    res.status(422).json({ error: 'Preencha os campos corretamente' })
+    return
+  }
+  if (!salary) {
+    res.status(422).json({ error: 'Preencha o salário da Vaga' })
+    return
+  }
+  if (!local) {
+    res.status(422).json({ error: 'Preencha o local da Vaga' })
+    return
+  }
+  if (!link) {
+    res.status(422).json({ error: 'Preencha o link da Vaga' })
     return
   }
 
   const jobs = {
+    _id_empresa,
     urlImage,
     title,
     description,
@@ -19,7 +48,6 @@ router.post('/', async (req, res) => {
     salary,
     local,
     link,
-    pagination,
   }
 
   try {
