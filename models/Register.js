@@ -6,7 +6,8 @@ const Register = mongoose.model('Register', {
   type: String,
   cnpj: String,
   password: String,
-  confirmpassword: String
+  confirmpassword: String,
+  verified: Boolean
 })
 
 module.exports = Register
