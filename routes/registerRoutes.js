@@ -36,7 +36,6 @@ transporter.verify((error, success) => {
 })
 
 //Private Route
-
 function checkToken(req, res, next) {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(" ")[1]
@@ -70,9 +69,7 @@ router.get("/user/:id", checkToken, async (req, res) => {
 })
 
 const sendVerificationEmail = ({ _id, email, name }) => {
-  console.log(_id)
-  console.log(email)
-  console.log(name)
+
   const currentUrl = "https://seek-jobs-website-api.onrender.com"
   // const uniqueString = uuidv4() + _id
 
@@ -86,48 +83,32 @@ const sendVerificationEmail = ({ _id, email, name }) => {
      <a href=${currentUrl + "/auth/verify/" + _id}> ${currentUrl + "/auth/verify/" + _id}</a>`
   }
 
-  // hashing the uniqueString
-
-  // const saltRounds = 10
-  // bcrypt.hash(uniqueString, saltRounds)
-  // .then((hashedUniqueString) => {
-  //   const newVerification = new UserVerification({
-  //     userId: _id,
-  //     uniqueString: hashedUniqueString,
-  //     createdAt: Date.now(),
-  //     expiresAt: Date.noew() + 21600000
-  //   })
-
-  //   newVerification.save()
-  //     .then(() => {
-  transporter.sendMail(mailOptions)
-    .then((result) => {
-      return res.json({ status: 'Pendente', msg: "Verificação de Email Enviada" })
-    })
-    .catch((error) => {
-      return res.json({ msg: 'Ocorreu um erro ao enviar o Email', error })
-    })
-  //     })
-  //     .catch((error) => {
-  //       return res.json({ msg: 'Ocorreu um erro', error })
-  //     })
-  // })
-  // .catch(() => {
-  //   return res.status(422).json({ msg: 'Ocorreu um Erro ao fazer o hash do email' })
-  // })
+  try {
+    transporter.sendMail(mailOptions)
+  } catch (error) {
+    return res.json({ msg: 'Ocorreu um erro ao enviar o Email', error })
+  }
 }
-router.get("/verify/:userId", (req, res) => {
-  let { userId } = req.params
 
-  UserVerification.find({ userId })
-    .then((result) => {
-      if (result.length > 0) {
-        Register.findOneAndUpdate({
-          _id: userId
-        }, { verified: true }, { upsert: true, useFindAndModify: false });
-        return res.json({ msg: 'Usuário Verificado com Sucesso!', result })
-      }
-    })
+router.get("/verify/:userId", async (req, res) => {
+
+  const { userId } = req.params
+  const isUserVerified = await Register.findById(userId)
+
+  if (isUserVerified.verified) {
+    return res.status(200).json({ msg: "O Usuário já está autenticado. Faça Login para entrar" })
+  }
+
+  else {
+    await Register.findByIdAndUpdate(userId, { verified: true })
+    // const secret = process.env.SECRET
+    // const token = jwt.sign({
+    //   id: userId
+    // },
+    //   secret,
+    // )
+    res.status(200).json({ msg: "Usuário Autenticado com Sucesso! Faça Login para Continuar" })
+  }
 
 })
 
@@ -172,7 +153,6 @@ router.post('/register', async (req, res) => {
         )
       })
   }
-
   catch (error) {
     res.status(500).json({ error: 'Erro ao Criar Cadastro' })
   }
@@ -189,56 +169,35 @@ router.post('/', async (req, res) => {
   }
 
   const userExists = await Register.findOne({ email: email })
+  const userInfo = await Register.findOne({ email: email }, '-password -confirmpassword')
 
-  const allNeededInfo = await Register.find({ email: email }, '-password -confirmpassword')
-    .then((data) => {
-      if (!userExists) {
-        return res.status(404).json({ msg: "O usuário não está cadastrado. Deseja criar conta?" })
-      }
-      if (!data[0].verified) {
-        return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada" })
-      }
-      else {
+  if (!userExists) {
+    return res.status(404).json({ msg: "O usuário não está cadastrado. Deseja criar conta?" })
+  }
+  if (userExists.verified === false) {
+    return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada" })
+  }
+  else {
+    const checkPassword = bcrypt.compare(password, userExists.password)
 
-        const checkPassword = bcrypt.compare(password, userExists.password)
+    if (!checkPassword) {
+      return res.status(422).json({ msg: "Senha Inválida" })
+    }
 
-        if (!checkPassword) {
-          return res.status(422).json({ msg: "Senha Inválida" })
-        }
+    try {
+      const secret = process.env.SECRET
+      const token = jwt.sign({
+        id: userExists._id
+      },
+        secret,
+      )
+      res.status(200).json({ msg: "Login Efetuado com Sucesso", token, userInfo })
 
-        try {
-          const secret = process.env.SECRET
-          const token = jwt.sign({
-            id: userExists._id
-          },
-            secret,
-          )
-          res.status(200).json({ msg: "Login Efetuado com Sucesso", token, allNeededInfo })
-
-        } catch (error) {
-          console.log(error)
-          res.status(500).json({ msg: "Aconteceu um erro no servidor, tente novamente mais tarde!" })
-        }
-
-      }
-    })
-
-  // const user = new Register({
-  //   name,
-  //   email,
-  //   password
-  // })
-
-  // try {
-  //   await user.save()
-  //   res.status(201).json({ msg: "Usuário criado com sucesso" })
-
-  // } catch (error) {
-
-  //   console.log(error)
-  //   res.status(500).json({ msg: 'Aconteceu um erro no servidor, tente novamente mais tarde!' })
-  // }
-
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ msg: "Aconteceu um erro no servidor, tente novamente mais tarde!" })
+    }
+  }
 })
 
 module.exports = router
