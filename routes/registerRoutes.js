@@ -14,12 +14,14 @@ const nodemailer = require('nodemailer')
 const { v4: uuidv4 } = require('uuid')
 
 //.env
-require("dotenv").config()
+const dotenv = require('dotenv')
+dotenv.config()
 
 //nodemailer transporter
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   service: "gmail",
+  port: 465,
   auth: {
     user: process.env.AUTH_EMAIL,
     pass: process.env.AUTH_PASS
