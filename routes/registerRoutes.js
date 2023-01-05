@@ -22,6 +22,7 @@ const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   service: "gmail",
   port: 465,
+  secure: false,
   auth: {
     user: process.env.AUTH_EMAIL,
     pass: process.env.AUTH_PASS
@@ -78,7 +79,7 @@ const sendVerificationEmail = ({ _id, email, name }) => {
 
   //email content
   const mailOptions = {
-    from: process.env.AUTH_EMAIL,
+    from: "Seek Jobs <lucasdesouzasilva112@gmail.com>",
     to: email,
     subject: "Confirme seu Email - Seek Jobs",
     html: `<p> Olá ${name} 😎. Confirme seu Email para a acessar a plataforma Seek Jobs. </p>
