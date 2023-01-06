@@ -176,7 +176,7 @@ router.post('/', async (req, res) => {
   const userInfo = await Register.findOne({ email: email }, '-password -confirmpassword')
 
   if (!userExists) {
-    return res.status(404).json({ msg: "O usuário não está cadastrado. Deseja criar conta?" })
+    return res.status(404).json({ msg: "O usuário não está cadastrado. Crie uma Conta" })
   }
   if (userExists.verified === false) {
     return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada" })
