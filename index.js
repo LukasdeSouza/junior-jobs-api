@@ -68,7 +68,7 @@ app.use('/auth', registerRoutes)
 // })
 
 const PASSWORD = encodeURIComponent(process.env.DB_PASSWORD)
-mongoose.connect(`mongodb+srv://SeekJobs:wO9Htwq5PCdkQtS4@cluster0.butjmpf.mongodb.net/?retryWrites=true&w=majority`)
+mongoose.connect(`mongodb+srv://SeekJobs:${PASSWORD}@cluster0.butjmpf.mongodb.net/?retryWrites=true&w=majority`)
   .then(() => {
     console.log('Conexão Efetuada com Sucesso!')
     app.listen(4000)
