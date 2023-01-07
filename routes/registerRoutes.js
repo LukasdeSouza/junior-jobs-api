@@ -79,12 +79,16 @@ const sendVerificationEmail = ({ _id, email, name }) => {
 
   //email content
   const mailOptions = {
-    from: "Seek Jobs <lucasdesouzasilva112@gmail.com>",
+    from: "[Seek Jobs] <lucasdesouzasilva112@gmail.com>",
     to: email,
     subject: "Confirme seu Email - Seek Jobs",
-    html: `<p> Olá ${name} 😎. Confirme seu Email para a acessar a plataforma Seek Jobs. </p>
-     <p> Basta Clicar no Link para realizar a confirmação de email! </p> 
-     <a href=${currentUrl + "/auth/verify/" + _id}> ${currentUrl + "/auth/verify/" + _id}</a>`
+    html: `
+    <img src="https://i.ibb.co/HYX3CB1/logo-size.jpg" <br/> <h3> Olá ${name} 😎! </h3> <h4> Confirme seu Email para a acessar a plataforma Seek Jobs. </h4>
+     <h4> Basta Clicar no Link para realizar a Confirmação do seu Cadastro </h4> 
+     <a href=${currentUrl + "/auth/verify/" + _id}> ${currentUrl + "/auth/verify/" + _id}</a>
+     <br/>
+     <p>Seek Jobs - Open Source Project</p> <a href='https://seek-jobs.netlify.app/'>https://seek-jobs.netlify.app/</a>
+     `
   }
 
   try {
