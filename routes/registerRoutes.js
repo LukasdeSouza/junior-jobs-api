@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const Register = require('../models/Register')
-const UserVerification = require('../models/UserVerification')
 
 //nodemailer
 const nodemailer = require('nodemailer')

@@ -7,6 +7,7 @@ const { off } = require('./models/Person')
 const personRoutes = require('./routes/personRoutes')
 const jobsRoutes = require('./routes/jobsRoutes')
 const registerRoutes = require('./routes/registerRoutes')
+const userCVRoutes = require('./routes/userCVRoutes')
 
 
 const app = express()
@@ -36,6 +37,8 @@ app.get('/', (req, res) => {
 })
 
 app.use('/auth', registerRoutes)
+
+app.use("/usercv", userCVRoutes)
 
 // app.get('/customer', (req, res) => {
 //   res.json(
