@@ -9,6 +9,7 @@ const Jobs = mongoose.model('Jobs', {
   salary: String,
   local: String,
   link: String,
+  tier: String
 })
 
 module.exports = Jobs

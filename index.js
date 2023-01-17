@@ -8,7 +8,6 @@ const personRoutes = require('./routes/personRoutes')
 const jobsRoutes = require('./routes/jobsRoutes')
 const registerRoutes = require('./routes/userRoutes')
 const userCVRoutes = require('./routes/userCVRoutes')
-const userNewPassword = require('./routes/newPasswordRoutes')
 const userSendNewPasword = require('./routes/sendNewPasswordRoutes')
 
 

@@ -4,7 +4,7 @@ const Jobs = require('../models/Jobs')
 
 router.post('/', async (req, res) => {
 
-  const { _id_empresa, urlImage, title, description, tecnologies, salary, local, link } = req.body
+  const { _id_empresa, urlImage, title, description, tecnologies, salary, local, link, tier } = req.body
 
   if (!_id_empresa) {
     res.status(422).json({ error: 'Preencha o id da empresa' })
@@ -38,6 +38,10 @@ router.post('/', async (req, res) => {
     res.status(422).json({ error: 'Preencha o link da Vaga' })
     return
   }
+  if (!tier) {
+    res.status(422).json({ error: 'Preencha o o campo Nível ' })
+    return
+  }
 
   const jobs = {
     _id_empresa,
@@ -48,6 +52,7 @@ router.post('/', async (req, res) => {
     salary,
     local,
     link,
+    tier
   }
 
   try {
