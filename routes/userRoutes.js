@@ -4,7 +4,7 @@ const { genSalt } = require('bcrypt')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-const Register = require('../models/Register')
+const User = require('../models/User')
 
 //nodemailer
 const nodemailer = require('nodemailer')
@@ -61,7 +61,7 @@ router.get("/user/:id", checkToken, async (req, res) => {
 
   const id = req.params.id
 
-  const user = await Register.findById(id, '-password -confirmpassword')
+  const user = await User.findById(id, '-password -confirmpassword')
 
   if (!user) {
     return res.status(404).json({ msg: "Usuário não encontrado" })
@@ -100,14 +100,14 @@ const sendVerificationEmail = ({ _id, email, name }) => {
 router.get("/verify/:userId", async (req, res) => {
 
   const { userId } = req.params
-  const isUserVerified = await Register.findById(userId)
+  const isUserVerified = await User.findById(userId)
 
   if (isUserVerified.verified) {
     return res.status(200).json({ msg: "O Usuário já está autenticado. Faça Login para entrar" })
   }
 
   else {
-    await Register.findByIdAndUpdate(userId, { verified: true })
+    await User.findByIdAndUpdate(userId, { verified: true })
     // const secret = process.env.SECRET
     // const token = jwt.sign({
     //   id: userId
@@ -153,7 +153,7 @@ router.post('/register', async (req, res) => {
   }
 
   try {
-    await Register.create(register)
+    await User.create(register)
       .then((result) => {
         res.status(201).json(
           sendVerificationEmail(result)
@@ -175,8 +175,8 @@ router.post('/', async (req, res) => {
     return res.status(422).json({ msg: 'O campo Senha é obrigatório' })
   }
 
-  const userExists = await Register.findOne({ email: email })
-  const userInfo = await Register.findOne({ email: email }, '-password -confirmpassword')
+  const userExists = await User.findOne({ email: email })
+  const userInfo = await User.findOne({ email: email }, '-password -confirmpassword')
 
   if (!userExists) {
     return res.status(404).json({ msg: "O usuário não está cadastrado. Crie uma Conta" })

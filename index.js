@@ -6,8 +6,9 @@ const mongoose = require('mongoose')
 const { off } = require('./models/Person')
 const personRoutes = require('./routes/personRoutes')
 const jobsRoutes = require('./routes/jobsRoutes')
-const registerRoutes = require('./routes/registerRoutes')
+const registerRoutes = require('./routes/userRoutes')
 const userCVRoutes = require('./routes/userCVRoutes')
+const userSendNewPasword = require('./routes/sendNewPasswordRoutes')
 
 
 const app = express()
@@ -33,42 +34,15 @@ app.get('/', (req, res) => {
 app.use('/jobs', jobsRoutes)
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Lucas Jobs API Example' })
+  res.json({ message: 'Welcome to Seek Jobs API' })
 })
 
 app.use('/auth', registerRoutes)
 
 app.use("/usercv", userCVRoutes)
 
-// app.get('/customer', (req, res) => {
-//   res.json(
-//     {
-//       customer: {
-//         personalInfo: {
-//           name: "Lucas",
-//           age: 25,
-//           country: 'BR',
-//           gender: 'Male'
-//         },
-//         phoneInfo: {
-//           DDD: 34,
-//           phoneNumber: '99246-1158',
-//           operator: 'TIM'
-//         },
-//         adress: {
-//           city: 'Uberlândia',
-//           zipCode: '38410-727',
-//           neighbourhood: 'Laranjeiras',
-//         }
-//       },
-//       enterprise: {
-//         name: 'BestDeal',
-//         position: 'Frontend Developer',
-//         salary: 'R$4.000',
-//         timeInThePosition: '3 Months'
-//       }
-//     })
-// })
+app.use('/send-new-password', userSendNewPasword)
+
 
 const PASSWORD = encodeURIComponent(process.env.DB_PASSWORD)
 mongoose.connect(`mongodb+srv://SeekJobs:${PASSWORD}@cluster0.butjmpf.mongodb.net/?retryWrites=true&w=majority`)

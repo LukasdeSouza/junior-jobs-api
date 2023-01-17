@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const Register = mongoose.model('Register', {
+const User = mongoose.model('User', {
   name: String,
   email: String,
   type: String,
@@ -10,4 +10,4 @@ const Register = mongoose.model('Register', {
   verified: Boolean
 })
 
-module.exports = Register
+module.exports = User
