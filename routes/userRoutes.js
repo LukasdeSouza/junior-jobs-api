@@ -176,6 +176,7 @@ router.post('/', async (req, res) => {
   }
 
   const userExists = await User.findOne({ email: email })
+  //the below info's is to use the user informations on our application
   const userInfo = await User.findOne({ email: email }, '-password -confirmpassword')
 
   if (!userExists) {
@@ -185,25 +186,21 @@ router.post('/', async (req, res) => {
     return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada" })
   }
   else {
-    const checkPassword = bcrypt.compare(password, userExists.password)
-
-    if (!checkPassword) {
-      return res.status(422).json({ msg: "Senha Inválida" })
-    }
-
-    try {
-      const secret = process.env.SECRET
-      const token = jwt.sign({
-        id: userExists._id
-      },
-        secret,
+    bcrypt.compare(password, userExists.password)
+      .then((data) => {
+        if (data === false) {
+          return res.json({ msg: "Senha Incorreta!" })
+        }
+        else {
+          const secret = process.env.SECRET
+          const token = jwt.sign({
+            id: userExists._id
+          }, secret,
+          )
+          return res.json({ msg: "Login Efetuado com Sucesso", token, userInfo })
+        }
+      }
       )
-      res.status(200).json({ msg: "Login Efetuado com Sucesso", token, userInfo })
-
-    } catch (error) {
-      console.log(error)
-      res.status(500).json({ msg: "Aconteceu um erro no servidor, tente novamente mais tarde!" })
-    }
   }
 })
 
