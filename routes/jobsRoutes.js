@@ -4,10 +4,16 @@ const Jobs = require('../models/Jobs')
 
 router.post('/', async (req, res) => {
 
-  const { _id_empresa, urlImage, title, description, tecnologies, salary, local, link, tier } = req.body
+  const { _id_empresa, name, urlImage, title,
+    description, tecnologies, salary, local,
+    link, tier, type } = req.body
 
   if (!_id_empresa) {
     res.status(422).json({ error: 'Preencha o id da empresa' })
+    return
+  }
+  if (!name) {
+    res.status(422).json({ error: 'Preencha o campo nome da empresa' })
     return
   }
   if (!urlImage) {
@@ -15,15 +21,15 @@ router.post('/', async (req, res) => {
     return
   }
   if (!title) {
-    res.status(422).json({ error: 'Preencha os campos corretamente' })
+    res.status(422).json({ error: 'Preencha o campo de Título' })
     return
   }
   if (!description) {
-    res.status(422).json({ error: 'Preencha os campos corretamente' })
+    res.status(422).json({ error: 'Preencha o campo de descrição' })
     return
   }
   if (!tecnologies) {
-    res.status(422).json({ error: 'Preencha os campos corretamente' })
+    res.status(422).json({ error: 'Preencha o campo Tecnologias' })
     return
   }
   if (!salary) {
@@ -31,7 +37,7 @@ router.post('/', async (req, res) => {
     return
   }
   if (!local) {
-    res.status(422).json({ error: 'Preencha o local da Vaga' })
+    res.status(422).json({ error: 'Preencha o local da Vaga (Remoto/Híbrido)' })
     return
   }
   if (!link) {
@@ -39,12 +45,16 @@ router.post('/', async (req, res) => {
     return
   }
   if (!tier) {
-    res.status(422).json({ error: 'Preencha o o campo Nível ' })
+    res.status(422).json({ error: 'Preencha o campo Nível (Jr/Pleno/Sênior)' })
     return
+  }
+  if (!type) {
+    res.status(422).json({ error: 'Preencha o campo Tipo (CLT/PJ)' })
   }
 
   const jobs = {
     _id_empresa,
+    name,
     urlImage,
     title,
     description,
@@ -52,7 +62,8 @@ router.post('/', async (req, res) => {
     salary,
     local,
     link,
-    tier
+    tier,
+    type
   }
 
   try {
