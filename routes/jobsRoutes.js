@@ -87,6 +87,18 @@ router.get('/', async (req, res) => {
   }
 })
 
+// router.get('/:job', async (req, res) => {
+//   const job = req.params.job
+//   try {
+//     const jobs = await Jobs.find()
+
+//     res.status(200).json(jobs)
+
+//   } catch (error) {
+//     res.status(500).json({ error: error })
+//   }
+// })
+
 router.get('/:id', async (req, res) => {
   const id = req.params.id
 
