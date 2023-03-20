@@ -16,10 +16,10 @@ router.post('/', async (req, res) => {
     res.status(422).json({ error: 'Preencha o campo nome da empresa' })
     return
   }
-  if (!urlImage) {
-    res.status(422).json({ error: 'Preencha os campos corretamente' })
-    return
-  }
+  // if (!urlImage) {
+  //   res.status(422).json({ error: 'Preencha os campos corretamente' })
+  //   return
+  // }
   if (!title) {
     res.status(422).json({ error: 'Preencha o campo de Título' })
     return
