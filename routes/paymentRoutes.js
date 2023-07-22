@@ -19,15 +19,15 @@ const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY)
 // })
 
 router.post('/create-subscription', async (req, res) => {
-  const { name, email, priceId } = req.body
+  const { name, email, priceId, cardExpMonth, cardExpYear, cardNumber, cvc } = req.body
 
   const paymentMethod = await stripe.paymentMethods.create({
     type: 'card',
     card: {
-      exp_month: 5,
-      exp_year: 29,
-      number: '5502099192279234',
-      cvc: '680'
+      exp_month: cardExpMonth,
+      exp_year: cardExpYear,
+      number: cardNumber,
+      cvc: cvc
     }
   })
 
