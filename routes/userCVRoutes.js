@@ -1,8 +1,22 @@
 const router = require('express').Router()
-
+const jwt = require('jsonwebtoken')
 const UserCV = require('../models/UserCV')
+const dotenv = require('dotenv')
+dotenv.config()
 
-router.post('/', async (req, res) => {
+
+const verifyJWT = (req, res, next) => {
+  const token = req.headers.authorization
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).end()
+    }
+    req.id = decoded.id
+    next()
+  })
+}
+
+router.post('/', verifyJWT, async (req, res) => {
 
   const { profileImage, fullName, dateOfBirth, aboutMe, phone, civilState, interestJob,
     sex, institutionName, courseName, beginDate, endDate, courseStatus, education, expertise, occupationArea, experiences, github, linkedin, behance, portfolio } = req.body
@@ -81,7 +95,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.get('/:fullName', async (req, res) => {
+router.get('/:fullName', verifyJWT, async (req, res) => {
   const fullname = req.params.id
 
   try {

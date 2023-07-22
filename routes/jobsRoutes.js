@@ -1,17 +1,32 @@
 const router = require('express').Router()
 
+const jwt = require('jsonwebtoken')
 const Jobs = require('../models/Jobs')
+const dotenv = require('dotenv')
+dotenv.config()
 
-router.post('/', async (req, res) => {
+const verifyJWT = (req, res, next) => {
+  const token = req.headers.authorization
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).end()
+    }
+    req.id = decoded.id
+    next()
+  })
+}
 
-  const { _id_empresa, name, urlImage, title,
+
+router.post('/', verifyJWT, async (req, res) => {
+
+  const { name, urlImage, title,
     description, tecnologies, salary, local,
     link, tier, type } = req.body
 
-  if (!_id_empresa) {
-    res.status(422).json({ error: 'Preencha o id da empresa' })
-    return
-  }
+  // if (!_id_empresa) {
+  //   res.status(422).json({ error: 'Preencha o id da empresa' })
+  //   return
+  // }
   if (!name) {
     res.status(422).json({ error: 'Preencha o campo nome da empresa' })
     return
@@ -28,14 +43,14 @@ router.post('/', async (req, res) => {
     res.status(422).json({ error: 'Preencha o campo de descrição' })
     return
   }
-  if (!tecnologies) {
-    res.status(422).json({ error: 'Preencha o campo Tecnologias' })
-    return
-  }
-  if (!salary) {
-    res.status(422).json({ error: 'Preencha o salário da Vaga' })
-    return
-  }
+  // if (!tecnologies) {
+  //   res.status(422).json({ error: 'Preencha o campo Tecnologias' })
+  //   return
+  // }
+  // if (!salary) {
+  //   res.status(422).json({ error: 'Preencha o salário da Vaga' })
+  //   return
+  // }
   if (!local) {
     res.status(422).json({ error: 'Preencha o local da Vaga (Remoto/Híbrido)' })
     return
@@ -44,26 +59,25 @@ router.post('/', async (req, res) => {
     res.status(422).json({ error: 'Preencha o link da Vaga' })
     return
   }
-  if (!tier) {
-    res.status(422).json({ error: 'Preencha o campo Nível (Jr/Pleno/Sênior)' })
-    return
-  }
-  if (!type) {
-    res.status(422).json({ error: 'Preencha o campo Tipo (CLT/PJ)' })
-  }
+  // if (!tier) {
+  //   res.status(422).json({ error: 'Preencha o campo Nível (Jr/Pleno/Sênior)' })
+  //   return
+  // }
+  // if (!type) {
+  //   res.status(422).json({ error: 'Preencha o campo Tipo (CLT/PJ)' })
+  // }
 
   const jobs = {
-    _id_empresa,
     name,
     urlImage,
     title,
     description,
-    tecnologies,
-    salary,
+    // tecnologies,
+    // salary,
     local,
     link,
-    tier,
-    type
+    // tier,
+    // type
   }
 
   try {
@@ -75,7 +89,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.get('/', async (req, res) => {
+router.get('/', verifyJWT, async (req, res) => {
 
   try {
     const jobs = await Jobs.find()
@@ -99,7 +113,7 @@ router.get('/', async (req, res) => {
 //   }
 // })
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyJWT, async (req, res) => {
   const id = req.params.id
 
   try {
@@ -114,7 +128,7 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyJWT, async (req, res) => {
   const id = req.params.id
 
   const jobs = await Jobs.findOne({ _id: id })

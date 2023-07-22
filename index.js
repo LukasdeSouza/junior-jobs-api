@@ -9,6 +9,7 @@ const jobsRoutes = require('./routes/jobsRoutes')
 const registerRoutes = require('./routes/userRoutes')
 const userCVRoutes = require('./routes/userCVRoutes')
 const userSendNewPasword = require('./routes/sendNewPasswordRoutes')
+const paymentRoutes = require('./routes/paymentRoutes')
 
 
 const app = express()
@@ -27,10 +28,6 @@ app.use(function (req, res, next) {
 
 app.use('/person', personRoutes)
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Lucas Node API - Seek Jobs' })
-})
-
 app.use('/jobs', jobsRoutes)
 
 app.get('/', (req, res) => {
@@ -42,6 +39,8 @@ app.use('/auth', registerRoutes)
 app.use("/usercv", userCVRoutes)
 
 app.use('/send-new-password', userSendNewPasword)
+
+app.use('/payment', paymentRoutes)
 
 
 const PASSWORD = encodeURIComponent(process.env.DB_PASSWORD)

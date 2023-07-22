@@ -121,7 +121,7 @@ router.get("/verify/:userId", async (req, res) => {
 
 router.post('/register', async (req, res) => {
 
-  const { name, email, type, cnpj, password, confirmpassword } = req.body
+  const { name, email, password, confirmpassword } = req.body
 
   const salt = await genSalt(12)
   const passwordHash = await bcrypt.hash(password, salt)
@@ -131,9 +131,6 @@ router.post('/register', async (req, res) => {
   }
   if (!email) {
     return res.status(422).json({ msg: 'O campo Email é obrigatório' })
-  }
-  if (!type) {
-    return res.status(422).json({ msg: 'O campo Tipo é obrigatório' })
   }
   if (!password) {
     return res.status(422).json({ msg: 'O campo Senha é obrigatório' })
@@ -145,11 +142,10 @@ router.post('/register', async (req, res) => {
   const register = {
     name,
     email,
-    type,
-    cnpj,
     password: passwordHash,
     confirmpassword: passwordHash,
-    verified: false
+    verified: false,
+    createdAt: new Date()
   }
 
   try {
