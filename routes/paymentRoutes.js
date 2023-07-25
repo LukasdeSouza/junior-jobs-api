@@ -24,9 +24,9 @@ router.post('/create-subscription', async (req, res) => {
   const paymentMethod = await stripe.paymentMethods.create({
     type: 'card',
     card: {
+      number: cardNumber,
       exp_month: cardExpMonth,
       exp_year: cardExpYear,
-      number: cardNumber,
       cvc: cvc
     }
   })
@@ -66,6 +66,7 @@ router.post('/create-subscription', async (req, res) => {
       clientSecret: subscription.latest_invoice.payment_intent.client_secret,
       subscriptionId: subscription.id,
     })
+
   } catch (err) {
     console.log(err)
     res.status(500).json({ message: "Erro ao efetuar inscrição" });
