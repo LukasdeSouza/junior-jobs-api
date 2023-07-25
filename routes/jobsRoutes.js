@@ -31,10 +31,7 @@ router.post('/', verifyJWT, async (req, res) => {
     res.status(422).json({ error: 'Preencha o campo nome da empresa' })
     return
   }
-  // if (!urlImage) {
-  //   res.status(422).json({ error: 'Preencha os campos corretamente' })
-  //   return
-  // }
+
   if (!title) {
     res.status(422).json({ error: 'Preencha o campo de Título' })
     return
@@ -43,14 +40,7 @@ router.post('/', verifyJWT, async (req, res) => {
     res.status(422).json({ error: 'Preencha o campo de descrição' })
     return
   }
-  // if (!tecnologies) {
-  //   res.status(422).json({ error: 'Preencha o campo Tecnologias' })
-  //   return
-  // }
-  // if (!salary) {
-  //   res.status(422).json({ error: 'Preencha o salário da Vaga' })
-  //   return
-  // }
+
   if (!local) {
     res.status(422).json({ error: 'Preencha o local da Vaga (Remoto/Híbrido)' })
     return
@@ -59,25 +49,15 @@ router.post('/', verifyJWT, async (req, res) => {
     res.status(422).json({ error: 'Preencha o link da Vaga' })
     return
   }
-  // if (!tier) {
-  //   res.status(422).json({ error: 'Preencha o campo Nível (Jr/Pleno/Sênior)' })
-  //   return
-  // }
-  // if (!type) {
-  //   res.status(422).json({ error: 'Preencha o campo Tipo (CLT/PJ)' })
-  // }
+
 
   const jobs = {
     name,
     urlImage,
     title,
     description,
-    // tecnologies,
-    // salary,
     local,
     link,
-    // tier,
-    // type
   }
 
   try {
@@ -113,11 +93,11 @@ router.get('/', verifyJWT, async (req, res) => {
 //   }
 // })
 
-router.get('/:id', verifyJWT, async (req, res) => {
-  const id = req.params.id
+router.get('/:title', verifyJWT, async (req, res) => {
+  const title = req.params.title
 
   try {
-    const jobs = await Jobs.findOne({ _id: id })
+    const jobs = await Jobs.findOne({ title: title })
     if (!jobs) {
       res.status(422).json({ message: 'Desculpe! A vaga não foi encontrada' })
       return
@@ -138,14 +118,10 @@ router.delete('/:id', verifyJWT, async (req, res) => {
   }
 
   try {
-
     await Jobs.deleteOne({ _id: id })
-
     res.status(200).json({ message: 'Vaga removida com Sucesso' })
-
   } catch (error) {
     res.status(500).json({ error: error })
-
   }
 })
 
