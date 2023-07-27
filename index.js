@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 
 const { off } = require('./models/Person')
 const personRoutes = require('./routes/personRoutes')
@@ -26,6 +27,8 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Referer, Sec-Ch-Ua, Sec-Ch-Ua-Mobile, Sec-Ch-Ua-Platform, User-Agent, Authorization");
   next();
 });
+
+app.options('*', cors())
 
 app.use('/person', personRoutes)
 
