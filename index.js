@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const express = require('express')
 const mongoose = require('mongoose')
-// const cors = require('cors')
+const cors = require('cors')
 
 const { off } = require('./models/Person')
 const personRoutes = require('./routes/personRoutes')
@@ -29,7 +29,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-// app.options(cors())
+app.options(cors())
 
 app.use('/person', personRoutes)
 
