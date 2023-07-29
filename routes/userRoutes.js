@@ -203,10 +203,10 @@ router.post('/', async (req, res) => {
   const userInfo = await User.findOne({ email: email }, '-password -confirmpassword')
 
   if (!userExists) {
-    return res.status(404).json({ msg: "O usuário não está cadastrado. Crie uma Conta" })
+    return res.status(404).json({ msg: "Usuário não encontrado. Cadastre-se para acessar." })
   }
   if (userExists.verified === false) {
-    return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada" })
+    return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada." })
   }
   else {
     bcrypt.compare(password, userExists.password)
