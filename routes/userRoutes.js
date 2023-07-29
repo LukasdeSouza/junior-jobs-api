@@ -145,7 +145,9 @@ router.post('/register', async (req, res) => {
     password: passwordHash,
     confirmpassword: passwordHash,
     verified: false,
-    createdAt: new Date()
+    subscripted: {
+      status: false
+    }
   }
 
   try {
@@ -158,6 +160,31 @@ router.post('/register', async (req, res) => {
   }
   catch (error) {
     res.status(500).json({ error: 'Erro ao Criar Cadastro' })
+  }
+
+})
+router.patch('/', async (req, res) => {
+  const { name, email, password, verified, subscripted } = req.body
+  const salt = await genSalt(12)
+  const passwordHash = await bcrypt.hash(password, salt)
+
+  const user = {
+    name,
+    email,
+    verified,
+    subscripted
+  }
+
+  try {
+    const updateUser = await User.updateOne({ email: email }, user)
+
+    if (updateUser.matchedCount === 0) {
+      res.status(422).json({ message: 'O usuário não foi encontrado' })
+    }
+    res.status(200).json(user)
+  }
+  catch (error) {
+    res.status(500).json({ error: error })
   }
 
 })
