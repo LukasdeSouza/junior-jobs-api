@@ -212,7 +212,7 @@ router.post('/', async (req, res) => {
     bcrypt.compare(password, userExists.password)
       .then((data) => {
         if (data === false) {
-          return res.json({ msg: "Senha Incorreta!" })
+          return res.json({ msg: "Usuário ou Senha Inválidos!" })
         }
         else {
           const secret = process.env.SECRET
