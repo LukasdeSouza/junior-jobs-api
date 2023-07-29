@@ -65,7 +65,8 @@ router.post('/create-subscription', async (req, res) => {
       message: 'Inscrição efetuada com Sucesso!',
       clientSecret: subscription.latest_invoice.payment_intent.client_secret,
       subscriptionId: subscription.id,
-      customerData: customer
+      customerData: customer,
+      subscriptionData: subscription
     })
 
   } catch (err) {
