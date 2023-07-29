@@ -50,11 +50,11 @@ router.post('/create-subscription', async (req, res) => {
       customer: customer.id,
       items: [{ price: priceId }],
       payment_settings: {
-        payment_method_options: {
-          card: {
-            request_three_d_secure: 'any',
-          },
-        },
+        // payment_method_options: {
+        //   card: {
+        //     request_three_d_secure: 'any',
+        //   },
+        // },
         payment_method_types: ['card'],
         save_default_payment_method: 'on_subscription',
       },
