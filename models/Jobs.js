@@ -10,6 +10,7 @@ const Jobs = mongoose.model('Jobs', {
   // salary: String,
   local: String,
   link: String,
+  dateItWasCreated: Date
   // tier: String,
   // type: String,
 })

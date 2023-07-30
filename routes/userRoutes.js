@@ -71,31 +71,31 @@ router.get("/user/:id", checkToken, async (req, res) => {
   }
 })
 
-const sendVerificationEmail = ({ _id, email, name }) => {
+// const sendVerificationEmail = ({ _id, email, name }) => {
 
-  const currentUrl = "https://seek-jobs-website-api.onrender.com"
-  // const uniqueString = uuidv4() + _id
+//   const currentUrl = "https://seek-jobs-website-api.onrender.com"
+//   // const uniqueString = uuidv4() + _id
 
-  //email content
-  const mailOptions = {
-    from: "[Seek Jobs] <lucasdesouzasilva112@gmail.com>",
-    to: email,
-    subject: "Confirme seu Email - Seek Jobs",
-    html: `
-    <img src="https://i.ibb.co/HYX3CB1/logo-size.jpg" <br/> <h3> Olá ${name} 😎! </h3> <h4> Confirme seu Email para a acessar a plataforma Seek Jobs. </h4>
-     <h4> Basta Clicar no Link para realizar a Confirmação do seu Cadastro </h4> 
-     <a href=${currentUrl + "/auth/verify/" + _id}> ${currentUrl + "/auth/verify/" + _id}</a>
-     <br/>
-     <p>Seek Jobs - Open Source Project</p> <a href='https://seek-jobs.netlify.app/'>https://seek-jobs.netlify.app/</a>
-     `
-  }
+//   //email content
+//   const mailOptions = {
+//     from: "[Seek Jobs] <lucasdesouzasilva112@gmail.com>",
+//     to: email,
+//     subject: "Confirme seu Email - Seek Jobs",
+//     html: `
+//     <img src="https://i.ibb.co/HYX3CB1/logo-size.jpg" <br/> <h3> Olá ${name} 😎! </h3> <h4> Confirme seu Email para a acessar a plataforma Seek Jobs. </h4>
+//      <h4> Basta Clicar no Link para realizar a Confirmação do seu Cadastro </h4> 
+//      <a href=${currentUrl + "/auth/verify/" + _id}> ${currentUrl + "/auth/verify/" + _id}</a>
+//      <br/>
+//      <p>Seek Jobs - Open Source Project</p> <a href='https://seek-jobs.netlify.app/'>https://seek-jobs.netlify.app/</a>
+//      `
+//   }
 
-  try {
-    transporter.sendMail(mailOptions)
-  } catch (error) {
-    return res.json({ msg: 'Ocorreu um erro ao enviar o Email', error })
-  }
-}
+//   try {
+//     transporter.sendMail(mailOptions)
+//   } catch (error) {
+//     return res.json({ msg: 'Ocorreu um erro ao enviar o Email', error })
+//   }
+// }
 
 router.get("/verify/:userId", async (req, res) => {
 
@@ -153,8 +153,7 @@ router.post('/register', async (req, res) => {
   try {
     await User.create(register)
       .then((result) => {
-        res.status(201).json(
-          sendVerificationEmail(result)
+        res.status(201).json({ msg: 'Usuário Criado com Sucesso!', result }
         )
       })
   }

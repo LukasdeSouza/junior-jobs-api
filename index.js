@@ -7,7 +7,7 @@ const cors = require('cors')
 const { off } = require('./models/Person')
 const personRoutes = require('./routes/personRoutes')
 const jobsRoutes = require('./routes/jobsRoutes')
-const registerRoutes = require('./routes/userRoutes')
+const userRoutes = require('./routes/userRoutes')
 const userCVRoutes = require('./routes/userCVRoutes')
 const userSendNewPasword = require('./routes/sendNewPasswordRoutes')
 const paymentRoutes = require('./routes/paymentRoutes')
@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Seek Jobs API' })
 })
 
-app.use('/auth', registerRoutes)
+app.use('/auth', userRoutes)
 
 app.use("/usercv", userCVRoutes)
 
