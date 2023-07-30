@@ -146,10 +146,16 @@ router.post('/register', async (req, res) => {
   try {
     await User.create(register)
       .then((result) => {
+        const secret = process.env.SECRET
+        const token = jwt.sign(
+          { id: userExists._id },
+          secret
+        )
         res.status(201).json({
           msg: 'Usuário Criado com Sucesso!',
           userInfo: {
             _id: result._id,
+            token: token,
             createdAt: result?.createdAt,
             name: result?.name,
             email: result?.email,
