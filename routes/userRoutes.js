@@ -148,7 +148,7 @@ router.post('/register', async (req, res) => {
       .then((result) => {
         const secret = process.env.SECRET
         const token = jwt.sign(
-          { id: userExists._id },
+          { id: result._id },
           secret
         )
         res.status(201).json({
