@@ -97,27 +97,21 @@ router.get("/user/:id", checkToken, async (req, res) => {
 //   }
 // }
 
-router.get("/verify/:userId", async (req, res) => {
+// router.get("/verify/:userId", async (req, res) => {
 
-  const { userId } = req.params
-  const isUserVerified = await User.findById(userId)
+//   const { userId } = req.params
+//   const isUserVerified = await User.findById(userId)
 
-  if (isUserVerified.verified) {
-    return res.status(200).json({ msg: "O Usuário já está autenticado. Faça Login para entrar" })
-  }
+//   if (isUserVerified.verified) {
+//     return res.status(200).json({ msg: "O Usuário já está autenticado. Faça Login para entrar" })
+//   }
 
-  else {
-    await User.findByIdAndUpdate(userId, { verified: true })
-    // const secret = process.env.SECRET
-    // const token = jwt.sign({
-    //   id: userId
-    // },
-    //   secret,
-    // )
-    res.status(200).json({ msg: "Usuário Autenticado com Sucesso! Faça Login para Continuar" })
-  }
+//   else {
+//     await User.findByIdAndUpdate(userId, { verified: true })
+//     res.status(200).json({ msg: "Usuário Autenticado com Sucesso! Faça Login para Continuar" })
+//   }
 
-})
+// })
 
 router.post('/register', async (req, res) => {
 
@@ -144,7 +138,6 @@ router.post('/register', async (req, res) => {
     email,
     password: passwordHash,
     confirmpassword: passwordHash,
-    verified: false,
     subscripted: {
       status: false
     }
@@ -153,7 +146,16 @@ router.post('/register', async (req, res) => {
   try {
     await User.create(register)
       .then((result) => {
-        res.status(201).json({ msg: 'Usuário Criado com Sucesso!', result }
+        res.status(201).json({
+          msg: 'Usuário Criado com Sucesso!',
+          userInfo: {
+            _id: result._id,
+            createdAt: result?.createdAt,
+            name: result?.name,
+            email: result?.email,
+            subscripted: result?.subscripted,
+          }
+        }
         )
       })
   }
@@ -163,14 +165,11 @@ router.post('/register', async (req, res) => {
 
 })
 router.patch('/', async (req, res) => {
-  const { name, email, password, verified, subscripted } = req.body
-  const salt = await genSalt(12)
-  const passwordHash = await bcrypt.hash(password, salt)
+  const { name, email, subscripted } = req.body
 
   const user = {
     name,
     email,
-    verified,
     subscripted
   }
 
@@ -178,9 +177,9 @@ router.patch('/', async (req, res) => {
     const updateUser = await User.updateOne({ email: email }, user)
 
     if (updateUser.matchedCount === 0) {
-      res.status(422).json({ message: 'O usuário não foi encontrado' })
+      res.status(422).json({ msg: 'O usuário não foi encontrado' })
     }
-    res.status(200).json(user)
+    res.status(200).json({ msg: 'Usuário Atualizado com Sucesso', user })
   }
   catch (error) {
     res.status(500).json({ error: error })
@@ -204,9 +203,9 @@ router.post('/', async (req, res) => {
   if (!userExists) {
     return res.status(404).json({ msg: "Usuário não encontrado. Cadastre-se para acessar." })
   }
-  if (userExists.verified === false) {
-    return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada." })
-  }
+  // if (userExists.verified === false) {
+  //   return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada." })
+  // }
   else {
     bcrypt.compare(password, userExists.password)
       .then((data) => {
