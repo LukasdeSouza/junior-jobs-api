@@ -175,21 +175,20 @@ router.get("/user/:id", verifyJWT, async (req, res) => {
   }
 })
 
-router.delete("/user/:id", verifyJWT, async (req, res) => {
-  const id = req.params.id
-  const user = await User.findOne({ _id: id })
+// router.delete("/user/:id", verifyJWT, async (req, res) => {
+//   const id = req.params.id
+//   const user = await User.findOne({ _id: id })
 
-  if (!user) {
-    return res.status(404).json({ msg: "Usuário não encontrado" })
-  }
-  try {
-    await User.deleteOne({ _id: id })
-    res.status(200).json({ message: 'Usuário Excluído com Sucesso' })
-  } catch (error) {
-    return res.status(200).json({ error: error })
-  }
-
-})
+//   if (!user) {
+//     return res.status(404).json({ msg: "Usuário não encontrado" })
+//   }
+//   try {
+//     await User.deleteOne({ _id: id })
+//     res.status(200).json({ message: 'Usuário Excluído com Sucesso' })
+//   } catch (error) {
+//     return res.status(200).json({ error: error })
+//   }
+// })
 
 // const sendVerificationEmail = ({ _id, email, name }) => {
 //   const currentUrl = "https://seek-jobs-website-api.onrender.com"
