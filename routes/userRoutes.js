@@ -33,22 +33,15 @@ transporter.verify((error, success) => {
   }
 })
 
-function checkToken(req, res, next) {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(" ")[1]
-
-  if (!token) {
-    return res.status(401).json({ msg: "Acesso Negado" })
-  }
-  try {
-    const secret = process.env.SECRET
-    jwt.verify(token, secret)
+const verifyJWT = (req, res, next) => {
+  const token = req.headers.authorization
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).end()
+    }
+    req.id = decoded.id
     next()
-
-  } catch (error) {
-    console.log(error)
-    res.status(400).json({ msg: "Token Inválido" })
-  }
+  })
 }
 
 router.post('/', async (req, res) => {
@@ -107,10 +100,11 @@ router.patch('/', async (req, res) => {
 
 router.post('/register', async (req, res) => {
 
-  const { name, email, password, confirmpassword } = req.body
+  const { name, email, password, confirmpassword, type } = req.body
 
   const salt = await genSalt(12)
   const passwordHash = await bcrypt.hash(password, salt)
+  const createdAt = Date.now()
 
   if (!name) {
     return res.status(422).json({ msg: 'O campo Nome é obrigatório' })
@@ -124,12 +118,17 @@ router.post('/register', async (req, res) => {
   if (password !== confirmpassword) {
     return res.status(422).json({ msg: 'As senhas não conferem' })
   }
+  if (!type) {
+    return res.status(422).json({ msg: 'Informe o Tipo de Usuário' })
+  }
 
   const register = {
     name,
     email,
     password: passwordHash,
     confirmpassword: passwordHash,
+    createdAt,
+    type,
     subscripted: {
       status: false
     }
@@ -151,6 +150,7 @@ router.post('/register', async (req, res) => {
             createdAt: result?.createdAt,
             name: result?.name,
             email: result?.email,
+            type: result?.type,
             subscripted: result?.subscripted,
           }
         }
@@ -163,7 +163,7 @@ router.post('/register', async (req, res) => {
 
 })
 
-router.get("/user/:id", checkToken, async (req, res) => {
+router.get("/user/:id", verifyJWT, async (req, res) => {
   const id = req.params.id
   const user = await User.findById(id, '-password -confirmpassword')
 
