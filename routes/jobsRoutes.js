@@ -20,8 +20,8 @@ const verifyJWT = (req, res, next) => {
 router.post('/', verifyJWT, async (req, res) => {
 
   const { name, urlImage, title,
-    description, tecnologies, salary, local,
-    link, tier, type } = req.body
+    description, salary, local,
+    link, dateItWasCreated } = req.body
 
   // if (!_id_empresa) {
   //   res.status(422).json({ error: 'Preencha o id da empresa' })
@@ -50,6 +50,10 @@ router.post('/', verifyJWT, async (req, res) => {
     return
   }
 
+  if (!dateItWasCreated) {
+    res.status(422).json({ error: 'Informe a data de criação da Vaga' })
+    return
+  }
 
   const jobs = {
     name,
@@ -58,6 +62,7 @@ router.post('/', verifyJWT, async (req, res) => {
     description,
     local,
     link,
+    dateItWasCreated
   }
 
   try {
@@ -126,4 +131,3 @@ router.delete('/:id', verifyJWT, async (req, res) => {
 })
 
 module.exports = router
-
