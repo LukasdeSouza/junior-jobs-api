@@ -6,13 +6,10 @@ const jwt = require('jsonwebtoken')
 
 const User = require('../models/User')
 
-//nodemailer
 const nodemailer = require('nodemailer')
 
-//unique string
 const { v4: uuidv4 } = require('uuid')
 
-//.env
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -26,9 +23,7 @@ const transporter = nodemailer.createTransport({
     user: 'lucasdesouzasilva112@gmail.com',
     pass: 'jqzxtfndoqidqrml'
   },
-
 })
-
 transporter.verify((error, success) => {
   if (error) {
     console.log('Não foi possível Conectar ao Gmail', error)
@@ -38,7 +33,6 @@ transporter.verify((error, success) => {
   }
 })
 
-//Private Route
 function checkToken(req, res, next) {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(" ")[1]
@@ -57,61 +51,59 @@ function checkToken(req, res, next) {
   }
 }
 
-router.get("/user/:id", checkToken, async (req, res) => {
-
-  const id = req.params.id
-
-  const user = await User.findById(id, '-password -confirmpassword')
-
-  if (!user) {
-    return res.status(404).json({ msg: "Usuário não encontrado" })
+router.post('/', async (req, res) => {
+  const { email, password } = req.body
+  if (!email) {
+    return res.status(422).json({ msg: 'O campo Email é obrigatório' })
   }
+  if (!password) {
+    return res.status(422).json({ msg: 'O campo Senha é obrigatório' })
+  }
+  const userExists = await User.findOne({ email: email })
+  const userInfo = await User.findOne({ email: email }, '-password -confirmpassword')
+  if (!userExists) {
+    return res.status(404).json({ msg: "Usuário não encontrado. Cadastre-se para acessar." })
+  }
+  // if (userExists.verified === false) {
+  //   return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada." })
+  // }
   else {
-    return res.status(200).json({ user })
+    bcrypt.compare(password, userExists.password)
+      .then((data) => {
+        if (data === false) {
+          return res.json({ msg: "Usuário ou Senha Inválidos!" })
+        }
+        else {
+          const secret = process.env.SECRET
+          const token = jwt.sign({
+            id: userExists._id
+          }, secret,
+          )
+          return res.json({ msg: "Login Efetuado com Sucesso", token, userInfo })
+        }
+      }
+      )
   }
 })
 
-// const sendVerificationEmail = ({ _id, email, name }) => {
-
-//   const currentUrl = "https://seek-jobs-website-api.onrender.com"
-//   // const uniqueString = uuidv4() + _id
-
-//   //email content
-//   const mailOptions = {
-//     from: "[Seek Jobs] <lucasdesouzasilva112@gmail.com>",
-//     to: email,
-//     subject: "Confirme seu Email - Seek Jobs",
-//     html: `
-//     <img src="https://i.ibb.co/HYX3CB1/logo-size.jpg" <br/> <h3> Olá ${name} 😎! </h3> <h4> Confirme seu Email para a acessar a plataforma Seek Jobs. </h4>
-//      <h4> Basta Clicar no Link para realizar a Confirmação do seu Cadastro </h4> 
-//      <a href=${currentUrl + "/auth/verify/" + _id}> ${currentUrl + "/auth/verify/" + _id}</a>
-//      <br/>
-//      <p>Seek Jobs - Open Source Project</p> <a href='https://seek-jobs.netlify.app/'>https://seek-jobs.netlify.app/</a>
-//      `
-//   }
-
-//   try {
-//     transporter.sendMail(mailOptions)
-//   } catch (error) {
-//     return res.json({ msg: 'Ocorreu um erro ao enviar o Email', error })
-//   }
-// }
-
-// router.get("/verify/:userId", async (req, res) => {
-
-//   const { userId } = req.params
-//   const isUserVerified = await User.findById(userId)
-
-//   if (isUserVerified.verified) {
-//     return res.status(200).json({ msg: "O Usuário já está autenticado. Faça Login para entrar" })
-//   }
-
-//   else {
-//     await User.findByIdAndUpdate(userId, { verified: true })
-//     res.status(200).json({ msg: "Usuário Autenticado com Sucesso! Faça Login para Continuar" })
-//   }
-
-// })
+router.patch('/', async (req, res) => {
+  const { name, email, subscripted } = req.body
+  const user = {
+    name,
+    email,
+    subscripted
+  }
+  try {
+    const updateUser = await User.updateOne({ email: email }, user)
+    if (updateUser.matchedCount === 0) {
+      res.status(422).json({ msg: 'O usuário não foi encontrado' })
+    }
+    res.status(200).json({ msg: 'Usuário Atualizado com Sucesso', user })
+  }
+  catch (error) {
+    res.status(500).json({ error: error })
+  }
+})
 
 router.post('/register', async (req, res) => {
 
@@ -170,65 +162,54 @@ router.post('/register', async (req, res) => {
   }
 
 })
-router.patch('/', async (req, res) => {
-  const { name, email, subscripted } = req.body
 
-  const user = {
-    name,
-    email,
-    subscripted
+router.get("/user/:id", checkToken, async (req, res) => {
+  const id = req.params.id
+  const user = await User.findById(id, '-password -confirmpassword')
+
+  if (!user) {
+    return res.status(404).json({ msg: "Usuário não encontrado" })
   }
-
-  try {
-    const updateUser = await User.updateOne({ email: email }, user)
-
-    if (updateUser.matchedCount === 0) {
-      res.status(422).json({ msg: 'O usuário não foi encontrado' })
-    }
-    res.status(200).json({ msg: 'Usuário Atualizado com Sucesso', user })
-  }
-  catch (error) {
-    res.status(500).json({ error: error })
-  }
-
-})
-router.post('/', async (req, res) => {
-  const { email, password } = req.body
-
-  if (!email) {
-    return res.status(422).json({ msg: 'O campo Email é obrigatório' })
-  }
-  if (!password) {
-    return res.status(422).json({ msg: 'O campo Senha é obrigatório' })
-  }
-
-  const userExists = await User.findOne({ email: email })
-  //the below info's is to use the user informations on our application
-  const userInfo = await User.findOne({ email: email }, '-password -confirmpassword')
-
-  if (!userExists) {
-    return res.status(404).json({ msg: "Usuário não encontrado. Cadastre-se para acessar." })
-  }
-  // if (userExists.verified === false) {
-  //   return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada." })
-  // }
   else {
-    bcrypt.compare(password, userExists.password)
-      .then((data) => {
-        if (data === false) {
-          return res.json({ msg: "Usuário ou Senha Inválidos!" })
-        }
-        else {
-          const secret = process.env.SECRET
-          const token = jwt.sign({
-            id: userExists._id
-          }, secret,
-          )
-          return res.json({ msg: "Login Efetuado com Sucesso", token, userInfo })
-        }
-      }
-      )
+    return res.status(200).json({ user })
   }
 })
+
+// const sendVerificationEmail = ({ _id, email, name }) => {
+//   const currentUrl = "https://seek-jobs-website-api.onrender.com"
+//   // const uniqueString = uuidv4() + _id
+//   //email content
+//   const mailOptions = {
+//     from: "[Seek Jobs] <lucasdesouzasilva112@gmail.com>",
+//     to: email,
+//     subject: "Confirme seu Email - Seek Jobs",
+//     html: `
+//     <img src="https://i.ibb.co/HYX3CB1/logo-size.jpg" <br/> <h3> Olá ${name} 😎! </h3> <h4> Confirme seu Email para a acessar a plataforma Seek Jobs. </h4>
+//      <h4> Basta Clicar no Link para realizar a Confirmação do seu Cadastro </h4> 
+//      <a href=${currentUrl + "/auth/verify/" + _id}> ${currentUrl + "/auth/verify/" + _id}</a>
+//      <br/>
+//      <p>Seek Jobs - Open Source Project</p> <a href='https://seek-jobs.netlify.app/'>https://seek-jobs.netlify.app/</a>
+//      `
+//   }
+//   try {
+//     transporter.sendMail(mailOptions)
+//   } catch (error) {
+//     return res.json({ msg: 'Ocorreu um erro ao enviar o Email', error })
+//   }
+// }
+
+// router.get("/verify/:userId", async (req, res) => {
+//   const { userId } = req.params
+//   const isUserVerified = await User.findById(userId)
+//   if (isUserVerified.verified) {
+//     return res.status(200).json({ msg: "O Usuário já está autenticado. Faça Login para entrar" })
+//   }
+//   else {
+//     await User.findByIdAndUpdate(userId, { verified: true })
+//     res.status(200).json({ msg: "Usuário Autenticado com Sucesso! Faça Login para Continuar" })
+//   }
+// })
+
+
 
 module.exports = router

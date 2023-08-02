@@ -18,15 +18,12 @@ const verifyJWT = (req, res, next) => {
 
 
 router.post('/', verifyJWT, async (req, res) => {
-
   const { name, urlImage, title,
     description, salary, local,
-    link, dateItWasCreated } = req.body
+    link } = req.body
 
-  // if (!_id_empresa) {
-  //   res.status(422).json({ error: 'Preencha o id da empresa' })
-  //   return
-  // }
+  const dateItWasCreated = Date.now()
+
   if (!name) {
     res.status(422).json({ error: 'Preencha o campo nome da empresa' })
     return
@@ -50,16 +47,12 @@ router.post('/', verifyJWT, async (req, res) => {
     return
   }
 
-  if (!dateItWasCreated) {
-    res.status(422).json({ error: 'Informe a data de criação da Vaga' })
-    return
-  }
-
   const jobs = {
     name,
     urlImage,
     title,
     description,
+    salary,
     local,
     link,
     dateItWasCreated
@@ -85,18 +78,6 @@ router.get('/', verifyJWT, async (req, res) => {
     res.status(500).json({ error: error })
   }
 })
-
-// router.get('/:job', async (req, res) => {
-//   const job = req.params.job
-//   try {
-//     const jobs = await Jobs.find()
-
-//     res.status(200).json(jobs)
-
-//   } catch (error) {
-//     res.status(500).json({ error: error })
-//   }
-// })
 
 router.get('/:title', verifyJWT, async (req, res) => {
   const title = req.params.title
