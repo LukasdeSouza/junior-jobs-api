@@ -83,7 +83,8 @@ router.get('/:title', verifyJWT, async (req, res) => {
   const title = req.params.title
 
   try {
-    const jobs = await Jobs.findOne({ title: title })
+    const jobs = await Jobs.find({ title: { $regex: title } })
+
     if (!jobs) {
       res.status(422).json({ message: 'Desculpe! A vaga não foi encontrada' })
       return

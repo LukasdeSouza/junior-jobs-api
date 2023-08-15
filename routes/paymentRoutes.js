@@ -80,8 +80,14 @@ router.post('/cancel-subscription', async (req, res) => {
   const deletedSubscription = await stripe.subscriptions.del(
     req.body.subscriptionId
   );
-  res.send(deletedSubscription);
+  return res.send(deletedSubscription);
 });
 
+router.get('/check-subscription/:id', async (req, res) => {
+  const id = req.params.id
+  const subscription = await stripe.subscriptions.retrieve(id);
+
+  return res.status(200).json({ message: subscription })
+})
 
 module.exports = router

@@ -54,12 +54,11 @@ router.post('/', async (req, res) => {
   }
   const userExists = await User.findOne({ email: email })
   const userInfo = await User.findOne({ email: email }, '-password -confirmpassword')
+
   if (!userExists) {
     return res.status(404).json({ msg: "Usuário não encontrado. Cadastre-se para acessar." })
   }
-  // if (userExists.verified === false) {
-  //   return res.json({ msg: "Seu Email ainda não foi confirmado. Verifique sua Caixa de Entrada." })
-  // }
+
   else {
     bcrypt.compare(password, userExists.password)
       .then((data) => {
@@ -79,19 +78,17 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.patch('/', async (req, res) => {
-  const { name, email, subscripted } = req.body
-  const user = {
-    name,
-    email,
-    subscripted
-  }
+router.patch('/user', verifyJWT, async (req, res) => {
+  const { email, subscripted } = req.body
+  const filter = { email: email }
+  const update = { subscripted: subscripted }
+
   try {
-    const updateUser = await User.updateOne({ email: email }, user)
-    if (updateUser.matchedCount === 0) {
+    const updatedUser = await User.updateOne(filter, update)
+    if (updatedUser.matchedCount === 0) {
       res.status(422).json({ msg: 'O usuário não foi encontrado' })
     }
-    res.status(200).json({ msg: 'Usuário Atualizado com Sucesso', user })
+    res.status(200).json(update)
   }
   catch (error) {
     res.status(500).json({ error: error })
@@ -99,8 +96,7 @@ router.patch('/', async (req, res) => {
 })
 
 router.post('/register', async (req, res) => {
-
-  const { name, email, password, confirmpassword, type } = req.body
+  const { name, email, password, confirmpassword } = req.body
 
   const salt = await genSalt(12)
   const passwordHash = await bcrypt.hash(password, salt)
@@ -118,9 +114,6 @@ router.post('/register', async (req, res) => {
   if (password !== confirmpassword) {
     return res.status(422).json({ msg: 'As senhas não conferem' })
   }
-  if (!type) {
-    return res.status(422).json({ msg: 'Informe o Tipo de Usuário' })
-  }
 
   const register = {
     name,
@@ -128,10 +121,13 @@ router.post('/register', async (req, res) => {
     password: passwordHash,
     confirmpassword: passwordHash,
     createdAt,
-    type,
     subscripted: {
       status: false
     }
+  }
+  const userExists = await User.findOne({ email: email })
+  if (userExists !== null) {
+    res.status(422).json({ msg: 'Email já cadastrado, tente fazer Login' })
   }
 
   try {
@@ -142,7 +138,7 @@ router.post('/register', async (req, res) => {
           { id: result._id },
           secret
         )
-        res.status(201).json({
+        return res.status(201).json({
           msg: 'Usuário Criado com Sucesso!',
           userInfo: {
             _id: result._id,
@@ -153,14 +149,12 @@ router.post('/register', async (req, res) => {
             type: result?.type,
             subscripted: result?.subscripted,
           }
-        }
-        )
+        })
       })
   }
   catch (error) {
-    res.status(500).json({ error: 'Erro ao Criar Cadastro' })
+    return res.status(500).json({ error: 'Erro ao Criar Cadastro' })
   }
-
 })
 
 router.get("/user/:id", verifyJWT, async (req, res) => {

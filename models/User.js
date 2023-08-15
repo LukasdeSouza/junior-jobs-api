@@ -6,7 +6,6 @@ const User = mongoose.model('User', {
   password: String,
   confirmpassword: String,
   createdAt: Date,
-  type: String,
   subscripted: {
     current_period_end: Date,
     current_period_start: Date,
