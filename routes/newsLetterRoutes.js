@@ -14,11 +14,23 @@ router.post('/register', async (req, res) => {
     return
   }
 
+  let user = { email }
+
   try {
-    await UserCV.create(email)
-    res.status(201).json({ success: 'Inscrito com Sucesso!' })
+    await NewsLetter.create(user)
+      .then((result) => res.status(201).json({ success: 'Inscrito com Sucesso!' }))
   } catch (error) {
-    res.status(500).json({ error: "Ops! Não foi realizar a inscrição", error })
+    res.status(500).json({ error: "Ops! Não foi realizar a inscrição" })
+  }
+})
+
+router.get('/register', async (req, res) => {
+  try {
+    const users = await NewsLetter.find()
+    res.status(200).json(users)
+
+  } catch (error) {
+    res.status(500).json({ error: error })
   }
 })
 
