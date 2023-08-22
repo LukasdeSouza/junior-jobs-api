@@ -11,7 +11,7 @@ const userRoutes = require('./routes/userRoutes')
 const userCVRoutes = require('./routes/userCVRoutes')
 const userSendNewPasword = require('./routes/sendNewPasswordRoutes')
 const paymentRoutes = require('./routes/paymentRoutes')
-
+const newsLetterRoutes = require('./routes/newsLetterRoutes')
 
 const app = express()
 app.use(
@@ -45,6 +45,8 @@ app.use("/usercv", userCVRoutes)
 app.use('/send-new-password', userSendNewPasword)
 
 app.use('/payment', paymentRoutes)
+
+app.use('/newsletter', newsLetterRoutes)
 
 
 const PASSWORD = encodeURIComponent(process.env.DB_PASSWORD)
