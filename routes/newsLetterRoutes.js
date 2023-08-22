@@ -22,20 +22,5 @@ router.post('/register', async (req, res) => {
   }
 })
 
-router.get('/:fullName', verifyJWT, async (req, res) => {
-  const fullname = req.params.id
-
-  try {
-    const usercv = await UserCV.findOne({ fullname: fullname })
-    if (!usercv) {
-      res.status(422).json({ message: 'Desculpe! Nenhum usuário com este nome foi encontrado' })
-      return
-    }
-    res.status(200).json(usercv)
-  } catch (error) {
-    res.status(500).json({ error: error })
-  }
-})
 
 module.exports = router
-
