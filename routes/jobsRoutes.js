@@ -70,9 +70,15 @@ router.post('/', verifyJWT, async (req, res) => {
 router.get('/', verifyJWT, async (req, res) => {
 
   try {
-    const jobs = await Jobs.find()
-
-    res.status(200).json(jobs)
+    // const jobs = await Jobs.find()
+    Jobs.find().sort({ _id: '-1' }).exec((err, results) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: err })
+      }
+      res.status(200).json(results)
+    }
+    )
 
   } catch (error) {
     res.status(500).json({ error: error })
