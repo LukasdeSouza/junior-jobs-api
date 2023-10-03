@@ -169,20 +169,20 @@ router.get("/user/:id", verifyJWT, async (req, res) => {
   }
 })
 
-// router.delete("/user/:id", verifyJWT, async (req, res) => {
-//   const id = req.params.id
-//   const user = await User.findOne({ _id: id })
+router.delete("/user/:id", verifyJWT, async (req, res) => {
+  const id = req.params.id
+  const user = await User.findOne({ _id: id })
 
-//   if (!user) {
-//     return res.status(404).json({ msg: "Usuário não encontrado" })
-//   }
-//   try {
-//     await User.deleteOne({ _id: id })
-//     res.status(200).json({ message: 'Usuário Excluído com Sucesso' })
-//   } catch (error) {
-//     return res.status(200).json({ error: error })
-//   }
-// })
+  if (!user) {
+    return res.status(404).json({ msg: "Usuário não encontrado" })
+  }
+  try {
+    await User.deleteOne({ _id: id })
+    res.status(200).json({ message: 'Usuário Excluído com Sucesso' })
+  } catch (error) {
+    return res.status(200).json({ error: error })
+  }
+})
 
 // const sendVerificationEmail = ({ _id, email, name }) => {
 //   const currentUrl = "https://seek-jobs-website-api.onrender.com"
@@ -207,17 +207,16 @@ router.get("/user/:id", verifyJWT, async (req, res) => {
 //   }
 // }
 
-// router.get("/verify/:userId", async (req, res) => {
-//   const { userId } = req.params
-//   const isUserVerified = await User.findById(userId)
-//   if (isUserVerified.verified) {
-//     return res.status(200).json({ msg: "O Usuário já está autenticado. Faça Login para entrar" })
-//   }
-//   else {
-//     await User.findByIdAndUpdate(userId, { verified: true })
-//     res.status(200).json({ msg: "Usuário Autenticado com Sucesso! Faça Login para Continuar" })
-//   }
-// })
+router.get("/users", verifyJWT, async (req, res) => {
+
+  const allUsers = await User.find({}, '-password -confirmpassword')
+  if (!allUsers) {
+    return res.status(200).json({ msg: "Não foi possível retornar os usuários" })
+  }
+  else {
+    res.status(200).json({ allUsers })
+  }
+})
 
 
 

@@ -101,6 +101,21 @@ router.get('/:id', verifyJWT, async (req, res) => {
   }
 })
 
+router.get('/local/:local', verifyJWT, async (req, res) => {
+  const local = req.params.local
+
+  try {
+    const jobs = await Jobs.find({ local: local })
+    if (!jobs) {
+      res.status(422).json({ message: 'Desculpe! A vaga não foi encontrada' })
+      return
+    }
+    res.status(200).json(jobs)
+  } catch (error) {
+    res.status(500).json({ error: error })
+  }
+})
+
 router.delete('/:id', verifyJWT, async (req, res) => {
   const id = req.params.id
 
